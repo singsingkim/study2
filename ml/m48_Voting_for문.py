@@ -67,7 +67,7 @@ y_predict = model.predict(x_test)
 acc = accuracy_score(y_test, y_predict)
 print('add_score', acc)
 
-    
+      
 model_class = [xgb, rf, lr]
 for model2 in model_class:
     model2.fit(x_train, y_train)
