@@ -66,7 +66,7 @@ print('최종점수', results)
 y_predict = model.predict(x_test)
 acc = accuracy_score(y_test, y_predict)
 print('add_score', acc)
-
+  
       
 model_class = [xgb, rf, lr]
 for model2 in model_class:
@@ -76,6 +76,6 @@ for model2 in model_class:
     class_name = model2.__class__.__name__
     print('{0} 정확도 : {1:4f}'.format(class_name, score2)) # .format =  앞에 내용에 매치된다
     
-
+     
       
 
