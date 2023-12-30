@@ -77,5 +77,5 @@ for model2 in model_class:
     print('{0} 정확도 : {1:4f}'.format(class_name, score2)) # .format =  앞에 내용에 매치된다
     
 
-   
+      
 
