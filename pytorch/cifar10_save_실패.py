@@ -86,10 +86,11 @@ class 모델(nn.Module):
         x = self.pool(nn.functional.relu(self.conv1(x)))
         x = self.pool(nn.functional.relu(self.conv2(x)))
         x = self.pool(nn.functional.relu(self.conv3(x)))
-        x = torch.flatten(x, 1)
+        x = x.view(-1, 128*4*4)
         x = nn.functional.relu(self.fc1(x))
         x = self.fc2(x)
         return x
+
 
 
 
@@ -174,7 +175,8 @@ print('cifar10_model.pth_모델저장')
 
 # 4 예측
 classes = [
-    
+    'airplane', 'automobile', 'bird', 'cat', 'deer',
+    'dog', 'frog', 'horse', 'ship', 'truck',
 ]
 
 
@@ -187,17 +189,14 @@ with torch.no_grad():
     print('예측됌 : ', predicted, '\n실제 : ', actual)
 
 
+# epoch 5
+# --------------------------------------------------
+# loss : 0.812365 [  256/50000]
+# loss : 0.850005 [25856/50000]
+# 테스트 에러 : 
+#  정확도 : 68.6%, 평균 로스 : 0.9101470381021499)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 완료!!!!!!!!!!!!!!!!!!!!!!!
+# cifar10_model.pth_모델저장
+# 예측됌 :  cat 
+# 실제 :  cat
