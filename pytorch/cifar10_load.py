@@ -10,7 +10,8 @@ print('cifar10_model.pth_모델 호출 완료')
 
 # 4 예측
 classes = [
-    
+    'airplane', 'automobile', 'bird', 'cat', 'deer',
+    'dog', 'frog', 'horse', 'ship', 'truck',
 ]
 
 model.eval()
