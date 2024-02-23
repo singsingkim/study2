@@ -21,7 +21,7 @@ test_data = datasets.CIFAR10(
     transform=ToTensor(),
 )
 
-
+   
 BATCH_SIZE = 256
 # 배치사이즈 256
 #  정확도 : 40.5%, 평균 로스 : 1.6622591257095336)
