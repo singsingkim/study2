@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler, MinMaxScaler, Normalizer, RobustScaler
 from sklearn.metrics import accuracy_score, f1_score
 from lightgbm import LGBMClassifier
-
+####
 path= "c:/_data/kaggle/비만/"
 train=pd.read_csv(path+"train.csv",index_col=0)
 test=pd.read_csv(path+"test.csv",index_col=0)
