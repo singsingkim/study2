@@ -17,8 +17,8 @@ y= train['NObeyesdad']
 # print(x.shape,y.shape)  #(20758, 16) (20758,)
 
 TRAINSIZE = 0.8
-RS = 55
-NUM = 85
+RS = 60
+NUM = 90
 SAVENAME = f'biman{NUM}'
 
 lb = LabelEncoder()
