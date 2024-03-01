@@ -74,7 +74,7 @@ y_pred = model.predict(x_test)
 y_submit = model.predict(test)
 sample['NObeyesdad']=y_submit
 sample.to_csv(path + F"{SAVENAME}.csv", index=False)
-
+    
 # 정확도 평가
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
