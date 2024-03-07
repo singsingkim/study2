@@ -2,7 +2,7 @@
 # 2. digits
 # 3. fetch_covtype
 # 4. dacon_wine
-# 5. dacon_대출
+# 5. dacon_dechul
 # 6. kaggle 비만도
 # 7. load_diabetes
 # 8. california

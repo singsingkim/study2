@@ -49,7 +49,7 @@ scaler = MinMaxScaler()
 # scaler = StandardScaler()
 
 x_train = scaler.fit_transform(x_train)
-x_test = scaler.fit_transform(x_test)
+x_test = scaler.transform(x_test)
 
 n_splits = 5
 kFold = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=123)
