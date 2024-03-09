@@ -76,7 +76,7 @@ model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate = learnin
 hist = model.fit(x_train, y_train,
           callbacks=[es, rlr],
           epochs=1000, batch_size=10, validation_split=0.2)
-
+   
 # model = load_model('..\_data\_save\MCP\keras25_MCP1.hdf5')     
 # 체크포인트로 저장한것도 모델과 가중치가 같이 저장된다.
 
