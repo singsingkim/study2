@@ -1,29 +1,37 @@
-# 부모 클래스
-class Animal:
-    def __init__(a, name, sound):
-        a.name = name
-        a.sound = sound
+# 함수의 최소값 찾기
+import numpy as np
+import hyperopt as hp
+import pandas as pd
+print(hp.__version__)   # 0.2.7     # 개발자가 판매할때 1.0.0 정의한다. 그 이하는 베타 버전으로 인식해도 무방하다
 
-    def make_sound(a):
-        print(f"{a.name} 가 {a.sound} 소리를 냅니다.")
+from hyperopt import hp, fmin, tpe, Trials, STATUS_OK
 
-# 자식 클래스
-class Dog(Animal):  # Animal 클래스를 상속받음
-    def wag_tail(a):
-        print(f"{a.name} 가 꼬리를 흔듭니다.")
 
-class Cat(Animal):  # Animal 클래스를 상속받음
-    def scratch(a):
-        print(f"{a.name} 가 할퀴기를 합니다.")
+search_space = {'x1' : hp.quniform('x1', -10, 10, 1),       # 범위  # 딕셔너리 형태
+                'x2' : hp.quniform('x2', -15, 15, 1)}
+                    # hp.quniform(label., low, high, q) # q : 분할 단위
 
-# 각 클래스의 인스턴스 생성
-dog = Dog("멍멍이", "왈왈")
-cat = Cat("야옹이", "야옹")
+# hp.quniform(label., low, high, q) : label로 지정된 입력 값 변수 검색 공간을 최소값 low에서 최대값 high까지 q의 간격을 가지고 설정
+# hp.quniform(label, low, high) : 최소값 low에서 최대값 highg 까지 정규분포 형태의 검색 공간 설정
+# hp.randint(label, upper) : 0부터 최대값 upper 가지 random한 정수값으로 검색 공간 설정.
+# hp.loguniform(label.low, high) : exp(uniform(low, high))값을 밙환하며, 반환값의 log 변환 된 값은 정규분호 형태를 가지는 검색 공간 설정
 
-# 부모 클래스의 메서드 호출
-dog.make_sound()  # 멍멍이 가 왈왈 소리를 냅니다.
-cat.make_sound()  # 야옹이 가 야옹 소리를 냅니다.
+def objective_func(search_space):   # 로스로 넣어주면 최소의 로스를 찾아준다
+    x1 = search_space['x1']
+    x2 = search_space['x2']
+    
+    return_value = x1**2 -20*x2
+    
+    return return_value
 
-# 자식 클래스의 메서드 호출
-dog.wag_tail()    # 멍멍이 가 꼬리를 흔듭니다.
-cat.scratch()     # 야옹이 가 할퀴기를 합니다.
+trial_val = Trials()
+
+best  = fmin(
+    fn = objective_func,
+    space = search_space,
+    algo = tpe.suggest,     # 알고리즘, 디폴트
+    max_evals = 20,
+    trials=trial_val,
+    rstate = np.random.default_rng(seed=10)
+    # rstate = 123,
+)
