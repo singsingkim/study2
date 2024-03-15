@@ -8,7 +8,7 @@ y = [1,2,3,4,5]
 # y = wx + b
 w = tf.Variable(111, dtype=tf.float32)  # weight
 b = tf.Variable(0, dtype=tf.float32)    # bias
-
+   
 ###[실습] 맹그러!!
 # 2. 모델
 hypothesis = x * w + b
