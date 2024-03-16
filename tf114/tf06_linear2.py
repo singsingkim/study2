@@ -12,7 +12,7 @@ b = tf.Variable(0, dtype=tf.float32)    # bias
 ###[실습] 맹그러!!
 # 2. 모델
 hypothesis = x * w + b
-
+  
 # 3-1. 컴파일
 loss = tf.reduce_mean(tf.square(hypothesis - y))
 optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01)
