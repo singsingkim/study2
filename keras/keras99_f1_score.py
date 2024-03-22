@@ -70,7 +70,7 @@ print('acc : ', acc)
 # f1 은 원래 이진분류에서 사용한다. 
 f1 = f1_score(y_test, y_predict, average='macro')
 print('f1 : ', f1)
-       
+            
 # 데이터 감축 한 상태에서의 결과
 # acc :  0.8333333333333334
 # f1 :  0.7352941176470589
