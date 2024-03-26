@@ -22,21 +22,18 @@ train = optimizer.minimize(loss)    # loss 를 최소화 시키겠다.
 # model.compile(loss='mse', optimizer='sgd') 여기까지 진행한것
 
 # 3-2. 훈련
-sess = tf.compat.v1.Session()
-sess.run(tf.global_variables_initializer()) # 변수를 초기화 시키겠다.
+# sess = tf.compat.v1.Session()
+# 2번 파일과 같이 close 를 잡거나, with 로 범위 지정하여 자동 close
+with tf.compat.v1.Session() as sess:
+    sess.run(tf.global_variables_initializer()) # 변수를 초기화 시키겠다.
 
-# model.fit
-epochs = 101
-for step in range(epochs):
-    sess.run(train)         # 여기까지는 단순히 1 에포
-    if step % 20 == 0:
-        print(step, sess.run(loss), sess.run(w), sess.run(b))   # verbose 와 model.weight 에서 확인했던 놈들.
-sess.close()        
+    # model.fit
+    epochs = 101
+    for step in range(epochs):
+        sess.run(train)         # 여기까지는 단순히 1 에포
+        if step % 20 == 0:
+            print(step, sess.run(loss), sess.run(w), sess.run(b))   # verbose 와 model.weight 에서 확인했던 놈들.
+    # sess.close()        
+    
         
 
-# 0 44682.156 100.73333 -4.4
-# 20 616.13007 25.758467 -35.11292
-# 40 197.22882 17.902163 -36.406902
-# 60 175.841 16.470543 -34.97625
-# 80 159.67189 15.682805 -33.35919
-# 100 145.01625 14.98699 -31.793972        

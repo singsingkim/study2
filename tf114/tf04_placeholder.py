@@ -15,6 +15,7 @@ b = tf.compat.v1.placeholder(tf.float32)
 add_node = a + b
 
 print(sess.run(add_node, feed_dict={a:3, b:4})) # 7.0   # 키밸류형태의 딕셔너리 형태로 입력
+# 플레이스 홀더와 피드딕은 짝궁이다. 두 개 있으면 똑같이 두 개 정의 해주어야 됌
 
 ####################################################
 add_and_triple = add_node * 3
