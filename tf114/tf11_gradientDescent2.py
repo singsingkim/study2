@@ -27,7 +27,7 @@ lr = 0.1
 gradient = tf.reduce_mean((x * w + b- y) * x)
 
 descent = w - lr * gradient
-update = w.assign(descent)
+update = w.assign(descent)  # w 에 descent 를 할당하다
 # 여기까지가 경사하강법
 ########### ↑↑↑↑↑↑↑↑↑↑ 옵티마이저 ↑↑↑↑↑↑↑↑↑↑↑ ###########
 
