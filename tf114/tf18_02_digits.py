@@ -11,3 +11,4 @@ x_data = data
 y_data = target
 print(x_data.shape, y_data.shape)   # (1797, 64) (1797,)
 print(x_data[:1])
+   
