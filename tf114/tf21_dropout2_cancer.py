@@ -1,19 +1,26 @@
-# 드롭아웃을 적용했으나 훈련(0.5) 과 평가(1.0) 을 아직 분리하지 않았다.
-
+from sklearn.datasets import load_breast_cancer
 import tensorflow as tf
-tf.compat.v1.set_random_seed(777)
+tf.set_random_seed(777)
+from sklearn.preprocessing import MinMaxScaler
 
 # 1 데이터
-x_data = [[0,0],[0,1],[1,0],[1,1]]
-y_data = [[0],[1],[1],[0]]
+data, target = load_breast_cancer(return_X_y=True)
+
+x_data , y_data = data, target
+
+print(x_data.shape, y_data.shape)   # (569, 30) (569,)
 
 
-# 2 모델
-# model.add(Dense(10, input_dim=2))
-x = tf.compat.v1.placeholder(tf.float32, shape=[None, 2])
-y = tf.compat.v1.placeholder(tf.float32, shape=[None, 1])
+keep_prob = tf.placeholder(tf.float32)
 
-w1 = tf.compat.v1.Variable(tf.compat.v1.random_normal([2, 10]), name='weight1')
+
+scaler = MinMaxScaler()
+x_data = scaler.fit_transform(x_data)
+
+x = tf.compat.v1.placeholder(tf.float32, shape=[None, 30])
+y = tf.compat.v1.placeholder(tf.float32, shape=[None, ])
+
+w1 = tf.compat.v1.Variable(tf.compat.v1.random_normal([30, 10]), name='weight1')
 b1 = tf.compat.v1.Variable(tf.compat.v1.zeros([10]), name='bias1')
 layer1 = tf.compat.v1.matmul(x, w1) + b1    # (N, 10)
 print(layer1.shape) # (?, 10)
@@ -21,7 +28,7 @@ print(layer1.shape) # (?, 10)
 w2 = tf.compat.v1.Variable(tf.compat.v1.random_normal([10, 9]), name='weight2')
 b2 = tf.compat.v1.Variable(tf.compat.v1.zeros([9]), name='bias2')
 layer2 = tf.compat.v1.matmul(layer1, w2) + b2   # (N, 9)
-layer2 = tf.compat.v1.nn.dropout(layer2, keep_prob=0.5)
+layer2 = tf.compat.v1.nn.dropout(layer2, keep_prob=keep_prob)
 # 훈련할때에 드롭아웃 적용이되고 0.5가 적용이 된게 평가할때도 0.5가 적용이된다. 평가 할때는 전체(1.0)가 적용이 되어야 한다.
 
 
@@ -39,13 +46,6 @@ b5 = tf.compat.v1.Variable(tf.compat.v1.zeros([1]), name='bias5')
 hypothesis = tf.compat.v1.sigmoid(tf.compat.v1.matmul(layer4, w5) + b5)   # (N, 1)
 
 
-# [실습] 맹그러바
-# m02_5 번과 똑같은 레이어로 구성
-
-# 2 모델
-# hypothesis = tf.compat.v1.nn.sigmoid(tf.compat.v1.matmul(x, w) + b)
-
-# 3-1 컴파일
 # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ binary_crossentropy ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 loss = -tf.reduce_mean(y * tf.log(hypothesis) + (1-y) * tf.log(1-hypothesis))
 
@@ -61,16 +61,15 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     
     for step in range(2001):
-        cost_val, _ = sess.run([loss, train], feed_dict={x:x_data, y:y_data})
+        cost_val, _ = sess.run([loss, train], feed_dict={x:x_data, y:y_data, keep_prob:0.2})
         
         if step % 200 == 0:
             print(step, cost_val)
             
     hypo, pred, acc = sess.run([hypothesis, predicted, accuracy],
-                               feed_dict={x:x_data, y:y_data})
+                               feed_dict={x:x_data, y:y_data, keep_prob:1.0})
     
     print('훈련값 : \n', hypo)
     print('예측값 : \n', pred)
     print('ACC : \n', acc)
         
-
