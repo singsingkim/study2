@@ -55,8 +55,8 @@ loss = tf.reduce_mean(-tf.reduce_sum(y*tf.compat.v1.nn.log_softmax(hypothesis), 
 # loss = tf.comopat.v1.losses.softmax_cross_entropy(y, hypothesis)
 
 train = tf.compat.v1.train.AdamOptimizer(learning_rate=1e-3).minimize(loss)
-  
-           
+     
+              
 # 3-2 훈련 
 sess = tf.compat.v1.Session()
 sess.run(tf.compat.v1.global_variables_initializer())   # 변수를 메모리에 올린다.
