@@ -30,7 +30,7 @@ l1 = tf.nn.conv2d(x, w1, strides=[1,1,1,1], padding='VALID') # 4차원 맞추기
 
 print(w1)   # <tf.Variable 'w1:0' shape=(2, 2, 1, 64) dtype=float32_ref>
 print(l1)   # Tensor("Conv2D:0", shape=(?, 27, 27, 64), dtype=float32)
-
+   
 
 # layer2
 w2 = tf.compat.v1.get_variable('w2', shape=[3, 3, 64, 32])  # 레이어1의 필터가 컬러로 들어온다
