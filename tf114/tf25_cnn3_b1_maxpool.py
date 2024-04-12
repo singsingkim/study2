@@ -23,15 +23,19 @@ y = tf.compat.v1.placeholder(tf.float32, shape=[None, 10])
 w1 = tf.compat.v1.get_variable('w1', shape=[2, 2, 1, 64])
                                             # 커널사이즈, 컬러(채널), 필터(아웃풋)
 
-
+b1 = tf.compat.v1.Variable(tf.zeros([64]), name='b1')
 
 l1 = tf.nn.conv2d(x, w1, strides=[1,1,1,1], padding='VALID') # 4차원 맞추기 위한 형식 / 세칸 뛰우고 싶으면 : [1,3,3,1]
 # model.add(Conv2d(64, kernel_size=(2,2), input_shape=(28,28,1), stride=(1,1)))
-
-print(w1)   # <tf.Variable 'w1:0' shape=(2, 2, 1, 64) dtype=float32_ref>
-print(l1)   # Tensor("Conv2D:0", shape=(?, 27, 27, 64), dtype=float32)
+l1 += b1    # l1 = l1 + b1
+l1 = tf.nn.relu(l1)
+l1_maxpool = tf.nn.max_pool2d(l1, ksize=[1,2,2,1], strides=[1,2,2,1], padding='VALID')
+print(l1)           # Tensor("Relu:0", shape=(?, 27, 27, 64), dtype=float32)
+print(l1_maxpool)   # Tensor("MaxPool2d:0", shape=(?, 13, 13, 64), dtype=float32)   # 나머지 날린다 = valid, 나머지 살린다 = same
    
 
+
+'''
 # layer2
 w2 = tf.compat.v1.get_variable('w2', shape=[3, 3, 64, 32])  # 레이어1의 필터가 컬러로 들어온다
 
@@ -49,3 +53,4 @@ print(l2)   # Tensor("Conv2D_1:0", shape=(?, 14, 14, 32), dtype=float32)
 
 print(np.__version__)
 
+'''
