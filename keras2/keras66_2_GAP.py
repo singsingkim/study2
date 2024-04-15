@@ -42,7 +42,7 @@ y_test = one_hot.transform(y_test.reshape(-1, 1)).toarray()
 # print(x_train[0].shape)#(60000, 28, 28, 1)
 # print(x_test[0].shape)#(10000, 28, 28, 1)
       
-#2. 모델  
+#2. 모델            
 model = Sequential()
 model.add(Conv2D(100, (2,2), input_shape = (28, 28, 1),
                  strides=2, padding='same',
