@@ -45,7 +45,7 @@ y_test = one_hot.transform(y_test.reshape(-1, 1)).toarray()
 #2. 모델            
 model = Sequential()
 model.add(Conv2D(100, (2,2), input_shape = (28, 28, 1),
-                 strides=2, padding='same',
+                 strides=2, padding='same',   
                  ))    
 model.add(MaxPooling2D())
 model.add(Conv2D(filters=16, kernel_size=(3, 3), activation='relu')) #전달 (N,25,25,10)
