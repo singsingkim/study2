@@ -116,7 +116,7 @@ print("최종 loss : ", loss2)
 
 y_pred = []
 y_true = []
-   
+       
 with torch.no_grad():
     for x_batch, y_batch in test_loader:
         result = model(x_batch)
