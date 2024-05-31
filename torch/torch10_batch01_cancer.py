@@ -1,13 +1,12 @@
-# (logistic_regression = 이진 분류)
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score
 
 USE_CUDA = torch.cuda.is_available()
 DEVICE = torch.device('cuda' if USE_CUDA else 'cpu')
@@ -17,134 +16,106 @@ print('torch : ', torch.__version__, '사용 DEVICE :', DEVICE)
 datasets = load_breast_cancer()
 x = datasets.data
 y = datasets.target
-print(x.shape)  # (569, 30)
-print(y.shape)  # (569,)
 
+print(x.shape, y.shape)
 
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.7, random_state=42, shuffle=True, stratify=y)
 
-x_train, x_test, y_train, y_test = train_test_split(
-    x,y,
-    train_size=0.7,
-    shuffle=True,
-    random_state=333,
-    stratify=y,
-)
-
-# x_train = torch.FloatTensor(x_train).to(DEVICE)    # reshape(차원 하나 늘리면서 리쉐이프)
-# y_train = torch.FloatTensor(y_train).unsqueeze(1).to(DEVICE)
-# x_test = torch.FloatTensor(x_test).to(DEVICE)    # reshape(차원 하나 늘리면서 리쉐이프)
-# y_test = torch.FloatTensor(y_test).unsqueeze(1).to(DEVICE)
-
-
-scaler = StandardScaler()
+scaler =StandardScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
-### 여기까지의 데이터형식은 넘파이. 아래 과정에서 텐서로 변경
 
-x_train = torch.FloatTensor(x_train).to('cpu')    # reshape(차원 하나 늘리면서 리쉐이프)
-y_train = torch.FloatTensor(y_train).unsqueeze(1).to('cpu')
-x_test = torch.FloatTensor(x_test).to('cpu')    # reshape(차원 하나 늘리면서 리쉐이프)
-y_test = torch.FloatTensor(y_test).unsqueeze(1).to('cpu')
+x_train = torch.FloatTensor(x_train).to(DEVICE)
+y_train = torch.FloatTensor(y_train).unsqueeze(1).to(DEVICE)
+x_test = torch.FloatTensor(x_test).to(DEVICE)
+y_test = torch.FloatTensor(y_test).unsqueeze(1).to(DEVICE)
+
+print(x_train.shape, y_train.shape) 
+
+# torch 데이터 만들기 1. x와 y를 합침
+from torch.utils.data import TensorDataset, DataLoader
+train_set = TensorDataset(x_train, y_train)
+test_set = TensorDataset(x_test, y_test)
+# print(train_set.tensors[0]) #x
+# print(train_set.tensors[1]) #y
+
+# torch 데이터 만들기 2. 배치 넣어줌.
+print(len(train_set))#398
+train_loader = DataLoader(train_set, batch_size=32, shuffle=True)
+test_loader = DataLoader(test_set, batch_size=32, shuffle=False)
 
 #2. 모델구성
-# model = nn.Sequential(
-#     nn.Linear(30, 64),
-#     nn.Linear(64, 32),
-#     nn.ReLU(),
-#     nn.Linear(32, 16),
-#     nn.Linear(16, 8),
-#     nn.Linear(8, 1),
-#     nn.Sigmoid()
-# ).to('cpu')
 
 class Model(nn.Module):
-    def __init__(self, input_dim, output_dim):  # 클래스를 호출 됐을때 # 레이어의 정의
-        # super().__init__()
+    def __init__(self, input_dim, output_dim):
+        #super().__init__()
         super(Model, self).__init__()
         self.linear1 = nn.Linear(input_dim, 64)
         self.linear2 = nn.Linear(64, 32)
         self.linear3 = nn.Linear(32, 16)
-        self.relu = nn.ReLU()
-        self.linear4 = nn.Linear(16, output_dim)
+        self.linear4 = nn.Linear(16, 8)
+        self.linear5 = nn.Linear(8, output_dim)
         self.sigmoid = nn.Sigmoid()
+        self.relu = nn.ReLU()
         return
     
-    # 순전파
-    def forward(self, input_size):  #
+    #순전파
+    def forward(self, input_size):
         x = self.linear1(input_size)
         x = self.linear2(x)
         x = self.relu(x)
         x = self.linear3(x)
-        x = self.relu(x)
         x = self.linear4(x)
+        x = self.linear5(x)
         x = self.sigmoid(x)
         return x
 
-# model = Model(인풋, 아웃풋)
-model = Model(30, 1).to('cpu')
-
-
+model = Model(30, 1).to(DEVICE)
 
 #3. 컴파일, 훈련
-# model.compile(loss = 'mse', optimizer = 'adam')
-# criterion = nn.MSELoss()                #criterion : 표준
-criterion = nn.BCELoss()                #criterion : 표준
-optimizer = optim.Adam(model.parameters(), lr = 0.01)
-# optimizer = optim.SGD(model.parameters(), lr = 0.0001)
+criterion = nn.BCELoss()               #criterion : 표준
+optimizer = optim.Adam(model.parameters(), lr = 0.001)
 
-# model.fit(x,y, epochs = 100, batch_size=1)
-# 배치단위로 돌아간다
-def train(model, criterion, optimizer, x_train, y_train):
-    # model.train()   #훈련모드 default
-    
-    optimizer.zero_grad()   # -> loss를 weight로 편미분한 값을 초기화 시킨다는 것 (0 으로)
-    # w = w - lr * (loss를 weight로 편미분한 값)
-    hypothesis = model(x_train) #예상치 값 (순전파)
-    loss = criterion(hypothesis, y_train) #예상값과 실제값 loss
-    
-    #역전파
-    loss.backward() #기울기(gradient) 계산 (loss를 weight로 미분한 값)  # 역전파 시작
-    optimizer.step() # 가중치(w) 수정(weight 갱신)                     # 역전파 끝
-    return loss.item() #item 하면 numpy 데이터로 나옴
+def train(model, criterion, optimizer, loader):
+    total_loss = 0
+    for x_batch, y_batch in loader:
+        model.train()  # 훈련 모드
+        optimizer.zero_grad() #batch 당 초기화
+        hypothesis = model(x_batch)  # 예상치 값 (순전파)
+        loss = criterion(hypothesis, y_batch)  # 예상값과 실제값의 loss
+        loss.backward()  # 기울기(gradient) 계산 (loss를 weight로 미분한 값)
+        optimizer.step()  # 가중치(w) 수정 (weight 갱신)
+        total_loss += loss.item()
+        
+    return total_loss/len(loader)
 
-epochs = 5000
+epochs = 200
 for epoch in range(1, epochs + 1):
-    loss = train(model, criterion, optimizer, x_train, y_train)
+    loss = train(model, criterion, optimizer, train_loader)
     print('epoch {}, loss: {}'.format(epoch, loss)) #verbose
 
 print("===================================")
 
 #4. 평가, 예측
-# loss = model.evaluate(x,y)
-def evaluate(model, criterion, x_test, y_test):
-    model.eval() #평가모드  # 훈련할때는 드롭아웃 적용, 노말라이션 적용하지만
-                            # 평가할때는 훈련가중치로 1에포만 돌리면서 모든 데이터를
-                            # 평가하기때문에 드롭아웃 해제, 노말라이션 해제 시킨다
-                            # model.eval() 을 적용하지 않으면 
-                            # 기본적으로 model.train 을 적용시킨다
+def evaluate(model, criterion, loader):
+    model.eval() #평가모드
+    total_loss = 0
+    for x_batch, y_batch in loader:
+        with torch.no_grad():
+            y_predict = model(x_batch)
+            loss2 = criterion(y_batch, y_predict)
+            total_loss += loss2.item()
+    return total_loss/len(loader)
 
-    with torch.no_grad():   # 토치는 자동으로 그라디언트 건든다. 그라디언트 건들지 않는다고 설정
-                            # 역전파 사용안함으로 설정 -> 이걸 하지 않으면 평가하면서 그라디언트 갱신된다
-                            
-        y_predict = model(x_test)
-        loss2 = criterion(y_test, y_predict)
-    return loss2.item(), y_predict
-
-loss2, y_predict = evaluate(model, criterion, x_test, y_test)
+loss2 = evaluate(model, criterion, test_loader)
 print("최종 loss : ", loss2)
 
-############################# 밑에 어떻게 될까 ##################################
-
-#result = model.predict([4])
-# result = model(torch.Tensor([[101]]).to(DEVICE))
-acc = accuracy_score(y_test, y_predict.round())
-f1 = f1_score(y_test, y_predict.round())
-# print('101의 예측값 : ', result.item())
-print('acc : ', acc)
-print('f1 : ', f1)
-
-'''
-최종 loss :  1.8548365831375122
-acc :  0.9824561403508771
-f1 :  0.9859154929577465
-'''
+total_acc = 0
+for x_batch, y_batch in test_loader:
+    results = model(x_batch)
+    results = np.round(results.cpu().detach().numpy())
+    # y_test를 CPU로 이동하여 numpy 배열로 변환
+    y_test_cpu = y_batch.cpu().numpy().squeeze()
+    print('예측값 : ', results)
+    total_acc += accuracy_score(results, y_test_cpu)
+print("acc : ", total_acc/ len(test_loader))
