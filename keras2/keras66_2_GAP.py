@@ -82,3 +82,7 @@ y_test_armg =  np.argmax(y_test, axis=1)
 predict = np.argmax(model.predict(x_test),axis=1)
 print(predict)
 
+# loss =  0.31894344091415405
+# acc =  0.979200005531311
+# 313/313 [==============================] - 0s 790us/step
+# [7 2 1 ... 4 5 6]
