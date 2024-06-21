@@ -126,4 +126,4 @@ with torch.no_grad():
 y_pred = np.concatenate(y_pred, axis=0)
 y_true = np.concatenate(y_true, axis=0)
 print('r2 : ', r2_score(y_true, y_pred))
-                                            
+                                                
